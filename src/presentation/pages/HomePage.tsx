@@ -14,7 +14,7 @@ export function HomePage() {
           Bienvenidos
         </h1>
         <p className="mt-2 text-slate-500 dark:text-slate-400">
-          Elegí una herramienta para empezar
+          Elegí que queres hacer
         </p>
       </div>
       <nav className="grid w-full gap-3 sm:grid-cols-3 sm:gap-4">
