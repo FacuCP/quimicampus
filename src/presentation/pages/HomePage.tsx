@@ -11,7 +11,7 @@ export function HomePage() {
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 px-4 py-10 text-center sm:gap-10 sm:py-12">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl">
-          Bienvenidos
+          Hola!
         </h1>
         <p className="mt-2 text-slate-500 dark:text-slate-400">
           Elegí que queres hacer
