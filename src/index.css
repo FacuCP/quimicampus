@@ -1,7 +1,29 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-brand-50: #e6fdf8;
+  --color-brand-100: #c4f9ef;
+  --color-brand-200: #90f1e0;
+  --color-brand-300: #52e6cd;
+  --color-brand-400: #1ce6c8;
+  --color-brand-500: #10c6ab;
+  --color-brand-600: #0b9f8b;
+  --color-brand-700: #0d7d6f;
+  --color-brand-800: #10635a;
+  --color-brand-900: #12524b;
+  --color-brand-950: #04302c;
+}
+
 :root {
   color-scheme: light dark;
+}
+
+html {
+  /* Reserva siempre el ancho de la barra de scroll para que el contenido no
+     se corra al aparecer/desaparecer entre pantallas. */
+  scrollbar-gutter: stable;
+  /* Escala tipográfica global: 20% más grande que el tamaño por defecto. */
+  font-size: 120%;
 }
 
 html,
@@ -12,5 +34,34 @@ body,
 
 body {
   margin: 0;
+  overflow-x: hidden;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-brand-50);
+  color: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--color-brand-950);
+    color: #e2e8f0;
+  }
+}
+
+@keyframes route-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.route-fade {
+  animation: route-fade 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fade {
+    animation: none;
+  }
 }

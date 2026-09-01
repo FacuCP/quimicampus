@@ -49,7 +49,7 @@ export function ElementCombobox({
         onBlur={() => {
           closeTimer.current = window.setTimeout(() => setOpen(false), 120)
         }}
-        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
       />
       {open && results.length > 0 && (
         <ul
@@ -64,7 +64,7 @@ export function ElementCombobox({
                   event.preventDefault()
                   choose(element)
                 }}
-                className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-brand-50 dark:hover:bg-brand-950/40"
               >
                 <span className="inline-flex w-8 shrink-0 justify-center rounded bg-slate-100 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   {element.symbol}
@@ -72,7 +72,7 @@ export function ElementCombobox({
                 <span className="truncate text-slate-700 dark:text-slate-200">
                   {element.name}
                 </span>
-                <span className="ml-auto shrink-0 text-xs text-slate-400">
+                <span className="ml-auto shrink-0 text-xs text-slate-600">
                   Z&nbsp;{element.atomicNumber}
                 </span>
               </button>

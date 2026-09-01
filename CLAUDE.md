@@ -14,8 +14,21 @@ There is no test runner configured. `tsc -b` is the only type-check entry point;
 ## Architecture
 
 Client-only React 19 + TypeScript SPA (Vite), styled with **Tailwind CSS v4** (via the
-`@tailwindcss/vite` plugin; `src/index.css` is just `@import "tailwindcss"`), routed with
-**react-router-dom v7**. UI copy is in Spanish.
+`@tailwindcss/vite` plugin), routed with **react-router-dom v7**. UI copy is in Spanish;
+the app is branded "QuimiCampus".
+
+`src/index.css` holds the `@import "tailwindcss"`, a `@theme` block defining the
+`--color-brand-*` scale (a mint/turquoise around `#1CE6C8`) used for primary buttons,
+focus rings and accents, the tinted `body` background, and the `route-fade` keyframe.
+`AppRouter` wraps `<Routes>` in a `<div key={location.pathname} className="route-fade">`
+so each navigation fades the new page in (respects `prefers-reduced-motion`). `html` has
+`scrollbar-gutter: stable` so the layout doesn't shift when the scrollbar toggles between
+routes.
+
+`HomePage`'s three cards are a `grid-cols-3` row of `aspect-square` links, each showing an
+icon from `public/icons/<route>.svg` (`tabla-periodica.svg`, `calcular.svg`,
+`compuestos.svg` — currently copies of `placeholder.svg`; replace the file to set a real
+icon, see `public/icons/README.md`).
 
 The app is a small chemistry toolbox: a home page linking to three sections —
 `/tabla-periodica` (full interactive 118-element periodic table), `/calcular` (rule-of-three
@@ -51,21 +64,28 @@ If you regenerate `periodicTable.data.ts`, the generator script lives in the scr
 actinides at `ypos 10`) and merges in the `EN` (electronegativity) and `OX` (oxidation
 states) maps. `PeriodicTableGrid` positions each cell with inline `gridColumn`/`gridRow`.
 
-The layout is responsive (mobile-first Tailwind breakpoints). The periodic grid keeps a
-`min-w` and scrolls horizontally on small screens; `ElementDetailPanel` renders as a sticky
-side column at `lg:` and above, and as a fixed bottom sheet (with a close button wired to
+The layout is responsive (mobile-first Tailwind breakpoints). Every secondary page uses
+`components/Layout.tsx` — one fixed `max-w-5xl` frame with the "← Volver" link + `<h1>` in
+the same position on all pages; each page's content caps its own width below that. The
+periodic grid keeps a `min-w` and scrolls horizontally; `ElementDetailPanel` renders as a
+sticky side column at `lg:` and above, and as a fixed bottom sheet (close button wired to
 `clearSelection`) below that — see `PeriodicTablePage`.
 
-`/calcular` is `components/calcular/ProportionTable.tsx`: a 2-column table where row 1 picks
-an element per column (`ElementCombobox`, backed by `useElementSearch`), row 2 sets a
-reference unit + amount, and "Agregar fila" adds rows. Each extra row stores only
-`{ source, raw }` — the side the user typed and its text; the opposite cell is derived at
-render via `ruleOfThree` against the row-2 reference. Typing into the derived cell flips
-`source`. Units are labels only — no unit conversion, just proportion on the raw numbers.
+`/calcular` is `components/calcular/ProportionTable.tsx`: a `table-fixed` of 2–`MAX_COLUMNS`
+(3) columns ("Agregar/Quitar columna"). Row 1 = centred "Elemento A/B/C" title; row 2 =
+`ElementCombobox` + `UnitSelect` per column; row 3 = the reference quantities (tinted);
+rows 4+ ("Agregar fila") are data rows storing only `{ source, raw }` — the column index
+the user typed into and its text. Every other cell is derived at render via
+`ruleOfThree(refs[source], refs[col], typed)`; typing into a derived cell moves `source`.
+Units are labels only — no conversion, just proportion on the raw numbers.
 
-`/compuestos` is `components/compuestos/CompoundBuilder.tsx`: 2–4 rows, each an
-`ElementCombobox` + an oxidation-state `<select>` (options from `element.oxidationStates`)
-+ the element's electronegativity. It calls `analyzeCompound` live and shows formula
+`/compuestos` is `components/compuestos/CompoundBuilder.tsx`: a centred (`w-fit mx-auto`)
+`flex` row (scrolls) of fixed-size (`w-56 min-h-[15rem]`) element cards plus a dashed
+"Agregar elemento" card of the same size (up to `MAX_ROWS` = 4). Each card has an
+`ElementCombobox`, the oxidation state as a radio-pill group (`peer`/`peer-checked`
+styling, options from `element.oxidationStates`), electronegativity, and an info button
+that opens `ElementDetailPanel` inside `components/common/Modal.tsx`. It calls
+`analyzeCompound` live and shows the result in a centred, brand-bordered box: formula
 (`FormulaText` turns `"Fe2(SO4)3"` into subscripts), family, and traditional/Stock/IUPAC
 names. `analyzeCompound` covers binary (oxides, peroxides, hydrides, hydracids, salts),
 ternary (hydroxides, oxoacids, oxosalts) and quaternary (acid salts) families via the

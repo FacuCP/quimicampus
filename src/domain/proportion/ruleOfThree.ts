@@ -1,25 +1,17 @@
-export type ProportionSide = 'a' | 'b'
-
-export interface ProportionReference {
-  /** Cantidad de referencia de la columna A (fila de unidades). */
-  readonly a: number
-  /** Cantidad de referencia de la columna B (fila de unidades). */
-  readonly b: number
-}
-
 /**
- * Regla de tres simple tomando la fila de referencia como proporción base.
- * Dada la referencia `a₀ : b₀` y un valor conocido en un lado, devuelve el otro lado.
+ * Regla de tres simple entre dos columnas de la fila de referencia.
+ *
+ * La fila de referencia establece que `referenceKnown` unidades de una magnitud
+ * equivalen a `referenceTarget` de otra. Dado `value` de la primera, devuelve cuánto
+ * corresponde de la segunda: `value · referenceTarget / referenceKnown`.
  */
 export function ruleOfThree(
-  reference: ProportionReference,
-  knownSide: ProportionSide,
+  referenceKnown: number,
+  referenceTarget: number,
   value: number,
 ): number {
-  if (reference.a <= 0 || reference.b <= 0) {
-    throw new Error('La fila de referencia debe tener cantidades positivas.')
+  if (referenceKnown <= 0 || referenceTarget <= 0) {
+    throw new Error('Las cantidades de referencia deben ser positivas.')
   }
-  return knownSide === 'a'
-    ? (value * reference.b) / reference.a
-    : (value * reference.a) / reference.b
+  return (value * referenceTarget) / referenceKnown
 }

@@ -8,14 +8,18 @@ interface LayoutProps {
   children: ReactNode
 }
 
+/**
+ * Marco común de las páginas secundarias: mismo ancho, mismo encabezado
+ * (botón "volver" + título) en la misma posición en todas.
+ */
 export function Layout({ title, backTo, children }: LayoutProps) {
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-3 py-5 sm:gap-6 sm:px-4 sm:py-8">
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-4 px-3 py-5 sm:gap-6 sm:px-4 sm:py-8">
       <header className="flex flex-wrap items-center gap-3 sm:gap-4">
         {backTo && (
           <Link
             to={backTo}
-            className="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="rounded-md border border-brand-300 px-3 py-1 text-sm text-brand-700 hover:bg-brand-50 dark:border-brand-700 dark:text-brand-300 dark:hover:bg-brand-950/40"
           >
             ← Volver
           </Link>

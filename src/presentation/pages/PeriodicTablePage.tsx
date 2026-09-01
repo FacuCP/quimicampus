@@ -9,11 +9,11 @@ export function PeriodicTablePage() {
 
   return (
     <Layout title="Tabla periódica" backTo="/">
-      {loading && <p className="text-slate-500">Cargando…</p>}
+      {loading && <p className="text-slate-700">Cargando…</p>}
       {error && <p className="text-red-600">{error}</p>}
       {!loading && !error && (
         <>
-          <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_16rem]">
             <PeriodicTableGrid
               elements={elements}
               selected={selected}
