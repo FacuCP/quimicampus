@@ -49,10 +49,22 @@ export function ElementDetailPanel({ element, onClose }: ElementDetailPanelProps
         <dd>{element.atomicMass} u</dd>
         <dt className="text-slate-500 dark:text-slate-400">Categoría</dt>
         <dd>{categoryLabel(element.category)}</dd>
+        <dt className="text-slate-500 dark:text-slate-400">Electronegatividad</dt>
+        <dd>{element.electronegativity ?? '—'}</dd>
         <dt className="text-slate-500 dark:text-slate-400">Período</dt>
         <dd>{element.period}</dd>
         <dt className="text-slate-500 dark:text-slate-400">Grupo</dt>
         <dd>{element.group ?? '—'}</dd>
+        <dt className="text-slate-500 dark:text-slate-400">N.º de oxidación</dt>
+        <dd>
+          {element.oxidationStates.length > 0
+            ? element.oxidationStates
+                .map((value) =>
+                  value > 0 ? `+${value}` : value < 0 ? `−${Math.abs(value)}` : '0',
+                )
+                .join(', ')
+            : '—'}
+        </dd>
       </dl>
     </div>
   )

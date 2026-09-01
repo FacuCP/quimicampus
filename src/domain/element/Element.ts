@@ -29,6 +29,24 @@ export interface Element {
   readonly xpos: number
   /** Fila en la grilla visual (1..7 tabla principal, 9..10 lantánidos/actínidos). */
   readonly ypos: number
+  /** Electronegatividad de Pauling, o null si no está definida (p. ej. gases nobles ligeros). */
+  readonly electronegativity: number | null
+  /** Números de oxidación más habituales, de menor a mayor. Vacío si no hay datos. */
+  readonly oxidationStates: readonly number[]
+}
+
+const METAL_CATEGORIES: ReadonlySet<ElementCategory> = new Set([
+  'metal-alcalino',
+  'metal-alcalinoterreo',
+  'metal-de-transicion',
+  'metal-del-bloque-p',
+  'lantanido',
+  'actinido',
+])
+
+/** Un elemento cuenta como metal a los fines de la formulación química. */
+export function isMetal(element: Element): boolean {
+  return METAL_CATEGORIES.has(element.category)
 }
 
 const CATEGORY_LABELS: Record<ElementCategory, string> = {

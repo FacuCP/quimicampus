@@ -5,7 +5,7 @@ import { unitSymbol } from '../../../domain/measurement/Unit'
 import type { ProportionSide } from '../../../domain/proportion/ruleOfThree'
 import { ruleOfThree } from '../../../domain/proportion/ruleOfThree'
 import { formatAmount, parseAmount } from './amount'
-import { ElementCombobox } from './ElementCombobox'
+import { ElementCombobox } from '../element/ElementCombobox'
 import { UnitSelect } from './UnitSelect'
 
 interface ExtraRow {

@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm install *)",
       "Bash(node -e \"const p=require\\('./package.json'\\);console.log\\(JSON.stringify\\({d:p.dependencies,dd:p.devDependencies},null,1\\)\\)\")",
-      "Bash(node \"C:/Users/facuc/AppData/Local/Temp/claude/c--Users-facuc-OneDrive-Escritorio-Carpetas-Codigo-proyecto-mama/4702c53b-1724-4bfd-b914-7ee8c3b33f6d/scratchpad/gen.mjs\" \"src/infrastructure/element/periodicTable.data.ts\")"
+      "Bash(node \"C:/Users/facuc/AppData/Local/Temp/claude/c--Users-facuc-OneDrive-Escritorio-Carpetas-Codigo-proyecto-mama/4702c53b-1724-4bfd-b914-7ee8c3b33f6d/scratchpad/gen.mjs\" \"src/infrastructure/element/periodicTable.data.ts\")",
+      "Bash(cp \"C:/Users/facuc/AppData/Local/Temp/claude/c--Users-facuc-OneDrive-Escritorio-Carpetas-Codigo-proyecto-mama/4702c53b-1724-4bfd-b914-7ee8c3b33f6d/scratchpad/test-compound.mjs\" ./_tc.mjs)",
+      "Bash(node ./_tc.mjs)",
+      "Bash(rm ./_tc.mjs)",
+      "Bash(grep -iE \"^esbuild|^tsx$|^vite-node|rolldown|^typescript$\")"
     ]
   }
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const LINKS = [
   { to: '/tabla-periodica', label: 'Tabla periódica' },
   { to: '/calcular', label: 'Calcular' },
-  { to: '/ecuaciones', label: 'Ecuaciones' },
+  { to: '/compuestos', label: 'Compuestos' },
 ]
 
 export function HomePage() {
