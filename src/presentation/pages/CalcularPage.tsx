@@ -1,10 +1,10 @@
 import { Layout } from '../components/Layout'
-import { NotImplemented } from '../components/NotImplemented'
+import { ProportionTable } from '../components/calcular/ProportionTable'
 
 export function CalcularPage() {
   return (
     <Layout title="Calcular" backTo="/">
-      <NotImplemented feature="Calcular" />
+      <ProportionTable />
     </Layout>
   )
 }

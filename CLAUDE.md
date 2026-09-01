@@ -25,19 +25,21 @@ The app is a small toolbox: a `Bienvenidos` home page linking to three sections 
 
 Dependencies point inward; each layer may only import from layers listed under it.
 
-- `domain/` — entities and ports. `element/Element.ts` (the `Element` interface,
-  `ElementCategory` union, `categoryLabel` helper), `element/ElementRepository.ts` (port).
-  Imports nothing from other layers.
-- `application/` — use cases. `element/GetPeriodicTable.ts` takes an `ElementRepository`,
-  returns elements sorted by atomic number. Imports `domain` only.
+- `domain/` — entities, ports and pure logic. `element/Element.ts` (`Element` interface,
+  `ElementCategory`, `categoryLabel`), `element/ElementRepository.ts` (port),
+  `element/filterElements.ts` (accent-insensitive partial search), `measurement/Unit.ts`
+  (`MEASUREMENT_UNITS` catalog + `unitSymbol`), `proportion/ruleOfThree.ts` (rule-of-three
+  proportion). Imports nothing from other layers.
+- `application/` — use cases. `element/GetPeriodicTable.ts` (sorted by atomic number) and
+  `element/SearchElements.ts` (`repo.getAll()` + `filterElements`). Imports `domain` only.
 - `infrastructure/` — adapters. `element/periodicTable.data.ts` is the flat 118-element
   dataset (Spanish names, standard masses, grid coords); `element/StaticElementRepository.ts`
   implements the port from that data.
 - `composition/container.ts` — the composition root. The **only** module that instantiates
   infrastructure and wires use cases. Presentation imports `container`, never `infrastructure`.
-- `presentation/` — React. `router/AppRouter.tsx`, `pages/*`, `components/*`,
-  `hooks/usePeriodicTable.ts` (calls `container.getPeriodicTable.execute()`). Talks to inner
-  layers through `container` and `domain` types only.
+- `presentation/` — React. `router/AppRouter.tsx`, `pages/*`, `components/*`, `hooks/*`
+  (`usePeriodicTable`, `useElementSearch` — each calls the matching `container.*` use case).
+  Talks to inner layers through `container` and `domain` types only.
 
 If you regenerate `periodicTable.data.ts`, the generator script lives in the scratchpad
 (`gen.mjs`) — it computes `xpos`/`ypos` from period/group, placing lanthanides at `ypos 9`
@@ -48,6 +50,13 @@ The layout is responsive (mobile-first Tailwind breakpoints). The periodic grid 
 `min-w` and scrolls horizontally on small screens; `ElementDetailPanel` renders as a sticky
 side column at `lg:` and above, and as a fixed bottom sheet (with a close button wired to
 `clearSelection`) below that — see `PeriodicTablePage`.
+
+`/calcular` is `components/calcular/ProportionTable.tsx`: a 2-column table where row 1 picks
+an element per column (`ElementCombobox`, backed by `useElementSearch`), row 2 sets a
+reference unit + amount, and "Agregar fila" adds rows. Each extra row stores only
+`{ source, raw }` — the side the user typed and its text; the opposite cell is derived at
+render via `ruleOfThree` against the row-2 reference. Typing into the derived cell flips
+`source`. Units are labels only — no unit conversion, just proportion on the raw numbers.
 
 ### Conventions
 

@@ -1,4 +1,5 @@
 import { GetPeriodicTable } from '../application/element/GetPeriodicTable'
+import { SearchElements } from '../application/element/SearchElements'
 import { StaticElementRepository } from '../infrastructure/element/StaticElementRepository'
 
 /**
@@ -9,4 +10,5 @@ const elementRepository = new StaticElementRepository()
 
 export const container = {
   getPeriodicTable: new GetPeriodicTable(elementRepository),
+  searchElements: new SearchElements(elementRepository),
 }
