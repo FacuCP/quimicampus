@@ -5,12 +5,15 @@ import { useElementSearch } from '../../hooks/useElementSearch'
 interface ElementComboboxProps {
   value: Element | null
   onChange: (element: Element) => void
+  /** Si se indica, muestra una ✕ para borrar la selección actual. */
+  onClear?: () => void
   placeholder?: string
 }
 
 export function ElementCombobox({
   value,
   onChange,
+  onClear,
   placeholder,
 }: ElementComboboxProps) {
   const [query, setQuery] = useState('')
@@ -20,6 +23,7 @@ export function ElementCombobox({
   const closeTimer = useRef<number | undefined>(undefined)
 
   const selectedLabel = value ? `${value.symbol} — ${value.name}` : ''
+  const showClear = value !== null && onClear !== undefined && !open
 
   const choose = (element: Element) => {
     window.clearTimeout(closeTimer.current)
@@ -49,8 +53,24 @@ export function ElementCombobox({
         onBlur={() => {
           closeTimer.current = window.setTimeout(() => setOpen(false), 120)
         }}
-        className="w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+        className={`w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 ${
+          showClear ? 'pr-8' : ''
+        }`}
       />
+      {showClear && (
+        <button
+          type="button"
+          onPointerDown={(event) => {
+            event.preventDefault()
+            onClear?.()
+          }}
+          aria-label="Borrar selección"
+          title="Borrar selección"
+          className="absolute inset-y-0 right-1 my-auto h-6 w-6 rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          ✕
+        </button>
+      )}
       {open && results.length > 0 && (
         <ul
           id={listId}

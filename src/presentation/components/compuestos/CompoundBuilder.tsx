@@ -61,11 +61,15 @@ export function CompoundBuilder() {
   ])
   const [infoElement, setInfoElement] = useState<Element | null>(null)
 
-  const setElement = (id: string, element: Element) =>
+  const setElement = (id: string, element: Element | null) =>
     setRows((current) =>
       current.map((row) =>
         row.id === id
-          ? { ...row, element, oxidationState: defaultOxidationState(element) }
+          ? {
+              ...row,
+              element,
+              oxidationState: element ? defaultOxidationState(element) : null,
+            }
           : row,
       ),
     )
@@ -114,7 +118,7 @@ export function CompoundBuilder() {
       <p className="text-sm text-slate-700 dark:text-slate-200">
         <b>Paso 1: </b>Elegí los elementos con los que vas a trabajar<br/> 
         <b>Paso 2: </b>Elegí los números de oxidación, en caso de ser necesarios<br/>
-        <b>Paso 3: </b>Descubrí que compuesto es formado!<br/>
+        <b>Paso 3: ¡Descubrí que compuesto es formado!<br/></b>
       </p>
 
       <div className="-mx-1 overflow-x-auto px-1 pb-1">
@@ -155,6 +159,7 @@ export function CompoundBuilder() {
               <ElementCombobox
                 value={row.element}
                 onChange={(element) => setElement(row.id, element)}
+                onClear={() => setElement(row.id, null)}
               />
 
               <div>

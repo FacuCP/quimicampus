@@ -154,6 +154,7 @@ export function ProportionTable() {
                     <ElementCombobox
                       value={column.element}
                       onChange={(element) => updateColumn(index, { element })}
+                      onClear={() => updateColumn(index, { element: null })}
                     />
                     <UnitSelect
                       value={column.unit}
