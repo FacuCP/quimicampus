@@ -1,6 +1,13 @@
 import { useId, useRef, useState } from 'react'
+import type { UIEvent } from 'react'
 import type { Element } from '../../../domain/element/Element'
 import { useElementSearch } from '../../hooks/useElementSearch'
+
+/** Opción extra (p. ej. "Soluto" / "Solvente") que no es un elemento químico. */
+export interface ComboboxExtraChoice {
+  id: string
+  label: string
+}
 
 interface ElementComboboxProps {
   value: Element | null
@@ -8,6 +15,21 @@ interface ElementComboboxProps {
   /** Si se indica, muestra una ✕ para borrar la selección actual. */
   onClear?: () => void
   placeholder?: string
+  /** Opciones adicionales que se muestran arriba de la lista de elementos. */
+  extraChoices?: ComboboxExtraChoice[]
+  /** Id de la opción extra seleccionada, si la selección actual no es un elemento. */
+  selectedExtraId?: string | null
+  onChooseExtra?: (id: string) => void
+}
+
+const PAGE_SIZE = 10
+
+function normalize(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
 }
 
 export function ElementCombobox({
@@ -15,19 +37,51 @@ export function ElementCombobox({
   onChange,
   onClear,
   placeholder,
+  extraChoices = [],
+  selectedExtraId,
+  onChooseExtra,
 }: ElementComboboxProps) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
-  const results = useElementSearch(query, 8)
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const results = useElementSearch(query, visibleCount)
   const listId = useId()
   const closeTimer = useRef<number | undefined>(undefined)
 
-  const selectedLabel = value ? `${value.symbol} — ${value.name}` : ''
-  const showClear = value !== null && onClear !== undefined && !open
+  // Al llegar cerca del final de la lista, se muestran PAGE_SIZE elementos más.
+  const handleListScroll = (event: UIEvent<HTMLUListElement>) => {
+    const el = event.currentTarget
+    if (el.scrollHeight - el.scrollTop - el.clientHeight > 48) return
+    setVisibleCount((current) =>
+      results.length >= current ? current + PAGE_SIZE : current,
+    )
+  }
+
+  const q = normalize(query)
+  const matchingExtras =
+    q === ''
+      ? extraChoices
+      : extraChoices.filter((choice) => normalize(choice.label).includes(q))
+
+  const selectedExtraLabel = selectedExtraId
+    ? (extraChoices.find((choice) => choice.id === selectedExtraId)?.label ?? '')
+    : ''
+  const selectedLabel = value
+    ? `${value.symbol} — ${value.name}`
+    : selectedExtraLabel
+  const hasSelection = value !== null || Boolean(selectedExtraId)
+  const showClear = hasSelection && onClear !== undefined && !open
 
   const choose = (element: Element) => {
     window.clearTimeout(closeTimer.current)
     onChange(element)
+    setQuery('')
+    setOpen(false)
+  }
+
+  const chooseExtra = (id: string) => {
+    window.clearTimeout(closeTimer.current)
+    onChooseExtra?.(id)
     setQuery('')
     setOpen(false)
   }
@@ -44,10 +98,12 @@ export function ElementCombobox({
         placeholder={placeholder ?? 'Buscar elemento…'}
         onChange={(event) => {
           setQuery(event.target.value)
+          setVisibleCount(PAGE_SIZE)
           setOpen(true)
         }}
         onFocus={() => {
           setQuery('')
+          setVisibleCount(PAGE_SIZE)
           setOpen(true)
         }}
         onBlur={() => {
@@ -71,11 +127,34 @@ export function ElementCombobox({
           ✕
         </button>
       )}
-      {open && results.length > 0 && (
+      {open && (results.length > 0 || matchingExtras.length > 0) && (
         <ul
           id={listId}
+          onScroll={handleListScroll}
           className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-md border border-slate-200 bg-white py-1 text-sm shadow-lg dark:border-slate-700 dark:bg-slate-900"
         >
+          {matchingExtras.map((choice) => (
+            <li key={`extra-${choice.id}`}>
+              <button
+                type="button"
+                onPointerDown={(event) => {
+                  event.preventDefault()
+                  chooseExtra(choice.id)
+                }}
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-brand-50 dark:hover:bg-brand-950/40"
+              >
+                <span className="inline-flex shrink-0 rounded bg-brand-100 px-1.5 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-950/60 dark:text-brand-300">
+                  Rol
+                </span>
+                <span className="truncate text-slate-700 dark:text-slate-200">
+                  {choice.label}
+                </span>
+              </button>
+            </li>
+          ))}
+          {matchingExtras.length > 0 && results.length > 0 && (
+            <li aria-hidden className="my-1 border-t border-slate-200 dark:border-slate-700" />
+          )}
           {results.map((element) => (
             <li key={element.atomicNumber}>
               <button

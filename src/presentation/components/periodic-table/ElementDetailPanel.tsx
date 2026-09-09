@@ -1,5 +1,9 @@
 import type { Element } from '../../../domain/element/Element'
 import { categoryLabel } from '../../../domain/element/Element'
+import {
+  electronConfiguration,
+  electronConfigurationShort,
+} from '../../../domain/element/electronConfiguration'
 import { CATEGORY_BG } from './categoryStyles'
 
 interface ElementDetailPanelProps {
@@ -66,6 +70,17 @@ export function ElementDetailPanel({ element, onClose }: ElementDetailPanelProps
             : '—'}
         </dd>
       </dl>
+      <div className="mt-3 border-t border-black/10 pt-2 dark:border-white/10">
+        <p className="text-xs text-slate-700 dark:text-slate-200">
+          Configuración electrónica
+        </p>
+        <p className="mt-0.5 font-mono text-sm text-slate-900 dark:text-slate-50">
+          {electronConfigurationShort(element.atomicNumber)}
+        </p>
+        <p className="mt-0.5 font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+          {electronConfiguration(element.atomicNumber)}
+        </p>
+      </div>
     </div>
   )
 }

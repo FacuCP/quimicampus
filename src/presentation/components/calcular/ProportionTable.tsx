@@ -10,8 +10,17 @@ import { UnitSelect } from './UnitSelect'
 const MAX_COLUMNS = 3
 const COLUMN_LABELS = ['A', 'B', 'C']
 
+type ColumnRole = 'soluto' | 'solvente'
+
+const COLUMN_ROLES: { id: ColumnRole; label: string }[] = [
+  { id: 'soluto', label: 'Soluto' },
+  { id: 'solvente', label: 'Solvente' },
+]
+
 interface Column {
   element: Element | null
+  /** Rol elegido cuando la columna representa el soluto/solvente en vez de un elemento. */
+  role: ColumnRole | null
   unit: MeasurementUnitId
 }
 
@@ -31,7 +40,7 @@ const secondaryButtonClass =
 const cellClass = 'border border-slate-200 p-2 align-top dark:border-slate-700'
 
 function makeColumn(): Column {
-  return { element: null, unit: 'mol' }
+  return { element: null, role: null, unit: 'mol' }
 }
 
 function columnLabel(index: number): string {
@@ -49,7 +58,9 @@ export function ProportionTable() {
     [referenceRow],
   )
   const ready =
-    columns.every((column) => column.element !== null) &&
+    columns.every(
+      (column) => column.element !== null || column.role !== null,
+    ) &&
     references.length === columns.length &&
     references.every((value) => value !== null && value > 0)
 
@@ -153,8 +164,20 @@ export function ProportionTable() {
                   <div className="flex flex-col gap-1.5">
                     <ElementCombobox
                       value={column.element}
-                      onChange={(element) => updateColumn(index, { element })}
-                      onClear={() => updateColumn(index, { element: null })}
+                      extraChoices={COLUMN_ROLES}
+                      selectedExtraId={column.role}
+                      onChange={(element) =>
+                        updateColumn(index, { element, role: null })
+                      }
+                      onChooseExtra={(role) =>
+                        updateColumn(index, {
+                          element: null,
+                          role: role as ColumnRole,
+                        })
+                      }
+                      onClear={() =>
+                        updateColumn(index, { element: null, role: null })
+                      }
                     />
                     <UnitSelect
                       value={column.unit}

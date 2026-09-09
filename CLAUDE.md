@@ -41,7 +41,9 @@ Dependencies point inward; each layer may only import from layers listed under i
 - `domain/` — entities, ports and pure logic. `element/Element.ts` (`Element` interface with
   `electronegativity` + `oxidationStates`, `categoryLabel`, `isMetal`),
   `element/ElementRepository.ts` (port), `element/filterElements.ts` (accent-insensitive
-  partial search), `measurement/Unit.ts` (`MEASUREMENT_UNITS` catalog + `unitSymbol`),
+  partial search), `element/electronConfiguration.ts` (Aufbau fill + known-anomaly table →
+  full and noble-gas-abbreviated configuration strings, from atomic number alone),
+  `measurement/Unit.ts` (`MEASUREMENT_UNITS` catalog + `unitSymbol`),
   `proportion/ruleOfThree.ts`, `compound/tables.ts` (nomenclature data) +
   `compound/analyzeCompound.ts` (classify a set of `{element, oxidationState}` into a
   compound family, build the formula, and name it three ways). Imports nothing from other

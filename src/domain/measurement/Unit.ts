@@ -13,6 +13,7 @@ export const MEASUREMENT_UNITS = [
   { id: 'litro', label: 'Litro', symbol: 'L' },
   { id: 'mililitro', label: 'Mililitro', symbol: 'mL' },
   { id: 'particula', label: 'Partícula', symbol: 'part.' },
+  { id: 'porcentaje', label: 'Porcentaje', symbol: '%' },
 ] as const satisfies readonly MeasurementUnit[]
 
 export type MeasurementUnitId = (typeof MEASUREMENT_UNITS)[number]['id']
