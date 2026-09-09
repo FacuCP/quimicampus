@@ -25,14 +25,15 @@ so each navigation fades the new page in (respects `prefers-reduced-motion`). `h
 `scrollbar-gutter: stable` so the layout doesn't shift when the scrollbar toggles between
 routes.
 
-`HomePage`'s three cards are a `grid-cols-3` row of `aspect-square` links, each showing an
-icon from `public/icons/<route>.svg` (`tabla-periodica.svg`, `calcular.svg`,
-`compuestos.svg` — currently copies of `placeholder.svg`; replace the file to set a real
-icon, see `public/icons/README.md`).
+`HomePage`'s four cards are a `grid-cols-2 sm:grid-cols-4` row of `aspect-square` links,
+each showing an icon from `public/icons/` (`tabla-periodica.png`, `calculadora.png`,
+`compuestos.png`, `practica.png`; `placeholder.svg` is the fallback template — see
+`public/icons/README.md`).
 
-The app is a small chemistry toolbox: a home page linking to three sections —
+The app is a small chemistry toolbox: a home page linking to four sections —
 `/tabla-periodica` (full interactive 118-element periodic table), `/calcular` (rule-of-three
-proportion table) and `/compuestos` (inorganic-compound name generator).
+proportion table), `/compuestos` (inorganic-compound name generator) and `/practica` (a
+menu page → `/practica/formar` and `/practica/nombrar`, timed self-quizzes).
 
 ### Clean architecture layers (`src/`)
 
@@ -46,8 +47,11 @@ Dependencies point inward; each layer may only import from layers listed under i
   `measurement/Unit.ts` (`MEASUREMENT_UNITS` catalog + `unitSymbol`),
   `proportion/ruleOfThree.ts`, `compound/tables.ts` (nomenclature data) +
   `compound/analyzeCompound.ts` (classify a set of `{element, oxidationState}` into a
-  compound family, build the formula, and name it three ways). Imports nothing from other
-  layers.
+  compound family, build the formula, and name it three ways) +
+  `compound/practice.ts` (enumerate typical element/oxidation-state combos per family, run
+  them through `analyzeCompound`, and return a shuffled list of `CompoundExercise`s for the
+  practice mode; also `isFormulaCorrect` / `isNameCorrect` answer checkers). Imports nothing
+  from other layers.
 - `application/` — use cases. `element/GetPeriodicTable.ts` (sorted by atomic number) and
   `element/SearchElements.ts` (`repo.getAll()` + `filterElements`). Imports `domain` only.
   Note `analyzeCompound` is a pure domain function — presentation calls it directly, no use
@@ -58,8 +62,9 @@ Dependencies point inward; each layer may only import from layers listed under i
 - `composition/container.ts` — the composition root. The **only** module that instantiates
   infrastructure and wires use cases. Presentation imports `container`, never `infrastructure`.
 - `presentation/` — React. `router/AppRouter.tsx`, `pages/*`, `components/*`, `hooks/*`
-  (`usePeriodicTable`, `useElementSearch` — each calls the matching `container.*` use case).
-  Talks to inner layers through `container` and `domain` types only.
+  (`usePeriodicTable`, `useElementSearch` — each calls the matching `container.*` use case;
+  `useAllElements` loads the full list for the practice generator). Talks to inner layers
+  through `container` and `domain` types only.
 
 If you regenerate `periodicTable.data.ts`, the generator script lives in the scratchpad
 (`gen.mjs`) — it computes `xpos`/`ypos` from period/group (lanthanides at `ypos 9`,
@@ -94,6 +99,16 @@ ternary (hydroxides, oxoacids, oxosalts) and quaternary (acid salts) families vi
 tables in `tables.ts`; systematic IUPAC names for oxoacids/oxosalts are approximate (the
 result carries a `note`). `ElementCombobox` lives in `components/element/` (shared by both
 `/calcular` and `/compuestos`).
+
+`/practica` is `pages/PracticaPage.tsx` (a two-card menu). Both options render
+`components/practica/CompoundPractice.tsx` with `mode="formula"` (`/practica/formar`, shows
+the Stock name, asks for the formula) or `mode="name"` (`/practica/nombrar`, shows the
+formula via `FormulaText`, asks for a name — any of the three nomenclatures is accepted).
+The component has three phases: `setup` (category pills from `PRACTICE_CATEGORIES` +
+"Comenzar"), `playing` (up to 10 exercises from `generateCompoundExercises`, a live
+`setInterval` timer in a fixed bottom bar + "Finalizar") and `done` (score, elapsed time,
+per-item ✓/✗ with the correct answer revealed, "Practicar de nuevo" / "Cambiar categorías").
+All exercise data and grading come from `domain/compound/practice.ts`.
 
 ### Conventions
 

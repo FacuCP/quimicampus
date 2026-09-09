@@ -8,6 +8,7 @@ const LINKS = [
   },
   { to: '/calcular', label: 'Calculadora', icon: '/icons/calculadora.png' },
   { to: '/compuestos', label: 'Compuestos', icon: '/icons/compuestos.png' },
+  { to: '/practica', label: 'Práctica', icon: '/icons/practica.png' },
 ]
 
 export function HomePage() {
@@ -26,19 +27,21 @@ export function HomePage() {
         </p>
       </div>
 
-      <nav className="grid w-full grid-cols-3 gap-3 sm:gap-4">
+      <nav className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {LINKS.map((link) => (
           <Link
             key={link.to}
             to={link.to}
-            className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-brand-300 bg-brand-400 p-2 text-center text-base font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-300 hover:shadow-md dark:border-brand-600 dark:bg-brand-500 dark:text-brand-950 dark:hover:bg-brand-400 sm:p-3 sm:text-lg"
+            className="flex aspect-square flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border border-brand-300 bg-brand-400 p-2 text-center font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-300 hover:shadow-md dark:border-brand-600 dark:bg-brand-500 dark:text-brand-950 dark:hover:bg-brand-400 sm:p-2.5"
           >
             <img
               src={link.icon}
               alt=""
-              className="w-3/4 flex-1 object-contain"
+              className="min-h-0 w-3/4 flex-1 object-contain"
             />
-            {link.label}
+            <span className="w-full text-sm leading-tight sm:text-xs">
+              {link.label}
+            </span>
           </Link>
         ))}
       </nav>
