@@ -10,11 +10,13 @@ import { UnitSelect } from './UnitSelect'
 const MAX_COLUMNS = 3
 const COLUMN_LABELS = ['A', 'B', 'C']
 
-type ColumnRole = 'soluto' | 'solvente'
+type ColumnRole = 'soluto' | 'solvente' | 'solucion' | 'otro'
 
 const COLUMN_ROLES: { id: ColumnRole; label: string }[] = [
   { id: 'soluto', label: 'Soluto' },
   { id: 'solvente', label: 'Solvente' },
+  { id: 'solucion', label: 'Solución' },
+  { id: 'otro', label: 'Otro' },
 ]
 
 interface Column {
