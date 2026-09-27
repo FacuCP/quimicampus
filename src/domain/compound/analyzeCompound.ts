@@ -91,8 +91,9 @@ function withMetalName(base: string, element: Element, state: number): string {
   return adjective ? `${base} ${adjective}` : `${base} de ${lower(element)}`
 }
 
-function metalPrefix(count: number, element: Element): string {
-  return count > 1 && isVariableValence(element) ? multiplier(count, false) : ''
+/** Prefijo de atomicidad del primer elemento ("di" en "trióxido de dioro"); sin "mono". */
+function metalPrefix(count: number): string {
+  return multiplier(count, false)
 }
 
 const BI_ANION: Record<string, string> = {
@@ -103,9 +104,12 @@ const BI_ANION: Record<string, string> = {
 
 // --- entry point -----------------------------------------------------------
 
-/** Corrige la elisión de vocales en los prefijos ("monoóxido" → "monóxido"). */
+/** Corrige la elisión de vocales en los prefijos ("monoóxido" → "monóxido", "pentaóxido" → "pentóxido"). */
 function fixSpelling(name: string): string {
-  return name.replace(/oó/g, 'ó').replace(/oo/g, 'o')
+  return name
+    .replace(/oó/g, 'ó')
+    .replace(/oo/g, 'o')
+    .replace(/(tetr|pent|hex|hept|oct)aóxido/g, '$1óxido')
 }
 
 export function analyzeCompound(
@@ -272,16 +276,15 @@ function metalOxide(
   }
 
   const { cation, anion } = crissCross(s, 2)
-  const oxygenPrefix = anion > 1 ? multiplier(anion, false) : ''
   return {
     kind: 'ok',
     family: 'oxido-basico',
-    familyLabel: 'Óxido básico',
+    familyLabel: 'Óxido metálico (básico)',
     formula: `${m.symbol}${sub(cation)}O${sub(anion)}`,
     names: {
       traditional: withMetalName('óxido', m, s),
       stock: `óxido de ${lower(m)}${stockSuffix(m, s)}`,
-      iupac: `${oxygenPrefix}óxido de ${metalPrefix(cation, m)}${lower(m)}`,
+      iupac: `${multiplier(anion)}óxido de ${metalPrefix(cation)}${lower(m)}`,
     },
     explanation: `${m.name} cede electrones (+${s}) al oxígeno (−2): óxido metálico de carácter básico.`,
   }
@@ -295,20 +298,19 @@ function acidOxide(nonmetal: CompoundSelection): CompoundAnalysis {
   const { cation, anion } = crissCross(s, 2)
   const central = OXO_CENTRAL[x.symbol]
   const acid = central?.states[s]?.acid
-  const nonmetalPrefix = cation > 1 ? multiplier(cation, false) : ''
   return {
     kind: 'ok',
     family: 'oxido-acido',
-    familyLabel: 'Óxido ácido (anhídrido)',
+    familyLabel: 'Óxido no metálico (ácido)',
     formula: `${x.symbol}${sub(cation)}O${sub(anion)}`,
     names: {
-      traditional: acid ? `anhídrido ${acid}` : `óxido de ${lower(x)}`,
+      traditional: acid ? `óxido ${acid}` : `óxido de ${lower(x)}`,
       stock: `óxido de ${lower(x)}(${roman(s)})`,
-      iupac: `${multiplier(anion)}óxido de ${nonmetalPrefix}${lower(x)}`,
+      iupac: `${multiplier(anion)}óxido de ${metalPrefix(cation)}${lower(x)}`,
     },
     note: acid
       ? undefined
-      : `No tengo el nombre "anhídrido" para ${x.name} con +${s}.`,
+      : `No tengo el nombre tradicional para ${x.name} con +${s}.`,
     explanation: `${x.name} (+${s}) frente al oxígeno (−2): óxido no metálico de carácter ácido.`,
   }
 }
@@ -326,7 +328,7 @@ function metalHydride(metal: CompoundSelection): CompoundAnalysis {
     names: {
       traditional: withMetalName('hidruro', m, s),
       stock: `hidruro de ${lower(m)}${stockSuffix(m, s)}`,
-      iupac: `${multiplier(s, false)}hidruro de ${lower(m)}`,
+      iupac: `${multiplier(s)}hidruro de ${lower(m)}`,
     },
     explanation: `${m.name} (+${s}) con hidrógeno (−1).`,
   }
@@ -401,7 +403,6 @@ function binarySalt(
   const anionCharge = -negative
   const { cation, anion } = crissCross(ms, anionCharge)
   const root = BINARY_ROOT[x.symbol] ?? `${lower(x)}uro`
-  const anionPrefix = anion > 1 ? multiplier(anion, false) : ''
   return {
     kind: 'ok',
     family: 'sal-binaria',
@@ -410,7 +411,7 @@ function binarySalt(
     names: {
       traditional: withMetalName(root, m, ms),
       stock: `${root} de ${lower(m)}${stockSuffix(m, ms)}`,
-      iupac: `${anionPrefix}${root} de ${metalPrefix(cation, m)}${lower(m)}`,
+      iupac: `${multiplier(anion)}${root} de ${metalPrefix(cation)}${lower(m)}`,
     },
     explanation: `${m.name} (+${ms}) con ${x.name} (${negative}).`,
   }
@@ -445,8 +446,8 @@ function covalentBinary(
   const p = positive.element
   const n = negative.element
   const root = BINARY_ROOT[n.symbol] ?? `${lower(n)}uro`
-  const anionPrefix = anion > 1 ? multiplier(anion, false) : ''
-  const positivePrefix = cation > 1 ? multiplier(cation, false) : ''
+  const anionPrefix = multiplier(anion)
+  const positivePrefix = metalPrefix(cation)
   return {
     kind: 'ok',
     family: 'binario-covalente',
@@ -588,7 +589,7 @@ function oxosalt(
     names: {
       traditional: withMetalName(state.anion, m, ms),
       stock: `${state.anion} de ${lower(m)}${stockSuffix(m, ms)}`,
-      iupac: `${iupacAnion} de ${metalPrefix(cation, m)}${lower(m)}`,
+      iupac: `${iupacAnion} de ${metalPrefix(cation)}${lower(m)}`,
     },
     note: 'El nombre IUPAC sistemático de oxosales es aproximado; el nombre de Stock es el de uso más frecuente.',
     explanation: `${m.name} (+${ms}) con el anión ${state.anion} (${x.name} +${xs}, carga ${anionCharge}−).`,
@@ -642,7 +643,7 @@ function acidSalt(
         metalTraditionalAdjective(m, ms) ? ` (${roman(ms)})` : ''
       }`,
       stock: `${compositionAnion} de ${lower(m)}${stockSuffix(m, ms)}`,
-      iupac: `${compositionAnion} de ${metalPrefix(cation, m)}${lower(m)}`,
+      iupac: `${compositionAnion} de ${metalPrefix(cation)}${lower(m)}`,
     },
     note: `Sal ácida con ${keptHydrogens} hidrógeno${keptHydrogens > 1 ? 's' : ''} sin neutralizar (uno menos que el ácido ${central.systematic}).`,
     explanation: `${m.name} (+${ms}) con el anión ${compositionAnion}.`,

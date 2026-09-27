@@ -237,7 +237,7 @@ function ResultCard({ analysis }: { analysis: CompoundAnalysis }) {
   const names: [string, string][] = [
     ['Tradicional', analysis.names.traditional],
     ['Stock', analysis.names.stock],
-    ['IUPAC', analysis.names.iupac],
+    ['Sistemática (atomicidad)', analysis.names.iupac],
   ]
 
   return (

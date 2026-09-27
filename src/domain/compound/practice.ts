@@ -96,7 +96,7 @@ const BINARY_NONMETALS = [
   'C',
 ] as const
 
-/** No metales que forman óxido ácido (anhídrido). */
+/** No metales que forman óxido no metálico (ácido). */
 const OXIDE_NONMETALS = [
   'Cl',
   'Br',
